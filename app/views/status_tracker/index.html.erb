@@ -24,3 +24,41 @@
 <% if @issues.empty? %>
   <p class="nodata">Henüz hiç iş kaydı yok.</p>
 <% end %>
+
+<hr />
+
+<div style="width: 500px; margin: 20px auto; text-align: center;">
+  <h3>📈 İş Durum Dağılımı</h3>
+  <canvas id="myStatusChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Controller'dan gelen verileri Javascript'e aktarıyoruz
+  // 'raw' komutu Ruby verisini olduğu gibi (tırnaklarıyla vb.) yazar.
+  const etiketler = <%= raw @chart_labels.to_json %>;
+  const veriler = <%= raw @chart_data.to_json %>;
+
+  const ctx = document.getElementById('myStatusChart');
+
+  new Chart(ctx, {
+    type: 'doughnut', // 'pie' veya 'bar' da yapabilirsin
+    data: {
+      labels: etiketler,
+      datasets: [{
+        label: 'İş Sayısı',
+        data: veriler,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+        }
+      }
+    }
+  });
+</script>

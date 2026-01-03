@@ -5,8 +5,11 @@
     <tr>
       <th># ID</th>
       <th>Konu</th>
-      <th>Durum</th>
-      <th>Oluşturulma Tarihi</th>
+      <th>Kategori</th> 
+      <th>Atanan Kişi</th>
+      <th>Şu Anki Durum</th>
+      <th>⏱️ Süre Analizi (Hangi Durumda Ne Kadar?)</th> <th>Oluşturulma Tarihi</th>
+      
     </tr>
   </thead>
   <tbody>
@@ -14,7 +17,15 @@
     <tr class="<%= cycle('odd', 'even') %>">
       <td><%= link_to issue.id, issue_path(issue) %></td>
       <td><%= link_to issue.subject, issue_path(issue) %></td>
+      <td><%= issue.category ? issue.category.name : '-' %></td>
+      <td><%= issue.assigned_to ? issue.assigned_to.name : '-' %></td>
       <td><%= issue.status.name %></td>
+      <td>
+        <% times = calculate_time_in_statuses(issue) %>
+        <% times.each do |status_name, seconds| %>
+          <strong><%= status_name %>:</strong> <%= format_duration(seconds) %><br>
+        <% end %>
+      </td>
       <td><%= format_time(issue.created_on) %></td>
     </tr>
     <% end %>

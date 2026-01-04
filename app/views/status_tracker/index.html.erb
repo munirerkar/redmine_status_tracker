@@ -57,9 +57,15 @@
         <div style="font-size:0.85em; color:#666;">(Devam Ediyor...)</div>
 
         <% if previous_states.any? %>
+          <% 
+             chart_labels = history_list.map { |h| h[:status] }
+             chart_data = history_list.map { |h| (h[:duration] / 3600.0).round(2) } 
+          %>
           <div style="margin-top:5px;">
-            <a href="javascript:void(0)" onclick="openHistoryModal('modal-<%= issue.id %>')" style="font-size:0.9em; text-decoration:underline; color:#1a73e8;">
-              🔍 Detaylar
+            <a href="javascript:void(0)" 
+               onclick="openHistoryModal('modal-<%= issue.id %>', 'chart-<%= issue.id %>', <%= chart_labels.to_json %>, <%= chart_data.to_json %>)" 
+               style="font-size:0.9em; text-decoration:underline; color:#1a73e8;">
+              🔍 Detaylar ve Grafik
             </a>
           </div>
 
@@ -72,7 +78,11 @@
                 </h3>
                 <span class="custom-close" onclick="closeHistoryModal('modal-<%= issue.id %>')">&times;</span>
               </div>
-              
+
+              <div style="height: 200px; margin-bottom: 20px;">
+                <canvas id="chart-<%= issue.id %>"></canvas>
+              </div>
+
               <table class="list" style="width:100%; margin-bottom: 20px;">
                 <thead>
                   <tr>
@@ -101,7 +111,12 @@
                 
                 <div>
                   <% if prev_issue %>
-                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= prev_issue.id %>')" style="cursor: pointer;">
+                    <% 
+                       p_hist = calculate_time_in_statuses(prev_issue)
+                       p_labels = p_hist.map { |h| h[:status] }
+                       p_data = p_hist.map { |h| (h[:duration] / 3600.0).round(2) }
+                    %>
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= prev_issue.id %>', 'chart-<%= prev_issue.id %>', <%= p_labels.to_json %>, <%= p_data.to_json %>)" style="cursor: pointer;">
                       &laquo; Önceki Konu
                     </button>
                     <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -114,7 +129,12 @@
 
                 <div style="text-align: right;">
                   <% if next_issue %>
-                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= next_issue.id %>')" style="cursor: pointer;">
+                    <% 
+                       n_hist = calculate_time_in_statuses(next_issue)
+                       n_labels = n_hist.map { |h| h[:status] }
+                       n_data = n_hist.map { |h| (h[:duration] / 3600.0).round(2) }
+                    %>
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= next_issue.id %>', 'chart-<%= next_issue.id %>', <%= n_labels.to_json %>, <%= n_data.to_json %>)" style="cursor: pointer;">
                       Sonraki Konu &raquo;
                     </button>
                     <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -208,11 +228,44 @@
 
 <hr />
 
-<div style="width: 500px; margin: 20px auto; text-align: center;">
-  <h3>📈 İş Durum Dağılımı</h3>
-  <canvas id="statusChart" 
-          data-labels="<%= @chart_labels.to_json %>" 
-          data-values="<%= @chart_data.to_json %>">
-  </canvas>
-</div>
 
+<h3>📊 Proje Analiz Paneli</h3>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; margin-bottom: 50px;">
+
+  <div style="flex: 1; min-width: 300px; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
+    <h4 style="text-align:center; margin-bottom:15px;">İş Durum Dağılımı</h4>
+    
+    <div style="position: relative; height: 500px; width: 100%;">
+      <canvas id="statusChart"
+              data-labels='<%= @chart_labels.to_json %>'
+              data-values='<%= @chart_data.to_json %>'>
+      </canvas>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+    
+    <div style="flex: 1; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
+      <h4 style="text-align:center; margin-bottom:10px;">Kategori Dağılımı</h4>
+      <div style="position: relative; height: 220px; width: 100%;">
+        <canvas id="categoryChart"
+          data-labels='<%= @summary_table.map{|i| i[:category_name]}.to_json %>'
+          data-values='<%= @summary_table.map{|i| i[:count]}.to_json %>'>
+        </canvas>
+      </div>
+    </div>
+
+    <div style="flex: 1; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
+      <h4 style="text-align:center; margin-bottom:10px;">Kullanıcı İş Yükü</h4>
+      <div style="position: relative; height: 220px; width: 100%;">
+        <canvas id="userChart"
+          data-labels='<%= @summary_table.map{|i| i[:user_name]}.to_json %>'
+          data-values='<%= @summary_table.map{|i| i[:count]}.to_json %>'>
+        </canvas>
+      </div>
+    </div>
+
+  </div>
+
+</div>

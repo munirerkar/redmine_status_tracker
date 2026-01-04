@@ -18,43 +18,6 @@ window.onclick = function(event) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  var ctxCanvas = document.getElementById('statusChart');
-
-  if (ctxCanvas) {
-    var rawLabels = ctxCanvas.dataset.labels;
-    var rawValues = ctxCanvas.dataset.values;
-
-    if (rawLabels && rawValues) {
-      var etiketler = JSON.parse(rawLabels);
-      var veriler = JSON.parse(rawValues);
-
-      new Chart(ctxCanvas.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-          labels: etiketler,
-          datasets: [{
-            label: 'İş Sayısı',
-            data: veriler,
-            borderWidth: 1,
-            backgroundColor: [
-              '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'bottom' },
-            title: {display: true}
-          }
-        }
-      });
-    }
-  }
-});
-
-
 // SCROLL KONUMUNU HATIRLAMA (Scroll Preservation)
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -83,4 +46,150 @@ document.addEventListener("DOMContentLoaded", function() {
       sessionStorage.setItem(scrollKey, window.scrollY);
     });
   });
+});
+
+// Global değişken: Aktif Chart örneğini tutmak için (Yoksa üst üste biner)
+var activeModalChart = null;
+
+// 1. MODAL (POPUP) FONKSİYONLARI
+function openHistoryModal(modalId, canvasId, labels, data) {
+  var modal = document.getElementById(modalId);
+  if (modal) {
+    modal.style.display = "block";
+    
+    // Eğer grafik parametreleri geldiyse grafiği çiz
+    if (canvasId && labels && data) {
+      drawModalChart(canvasId, labels, data);
+    }
+  }
+}
+
+function closeHistoryModal(id) {
+  var modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = "none";
+  }
+  // Modalı kapatınca chart'ı yok et (hafıza temizliği)
+  if (activeModalChart) {
+    activeModalChart.destroy();
+    activeModalChart = null;
+  }
+}
+
+// Popup İçi Grafik Çizici
+function drawModalChart(canvasId, labels, data) {
+  var ctx = document.getElementById(canvasId).getContext('2d');
+  
+  // Önceki grafik varsa sil (Yoksa mouse üzerine gelince titrer)
+  if (activeModalChart) {
+    activeModalChart.destroy();
+  }
+
+  activeModalChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Bu Durumda Geçen Süre (Saat)',
+        data: data,
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Saat' } }
+      }
+    }
+  });
+}
+
+// Pencere dışına tıklayınca kapatma
+window.onclick = function(event) {
+  if (event.target.className === 'custom-modal') {
+    event.target.style.display = "none";
+    if (activeModalChart) { activeModalChart.destroy(); activeModalChart = null; }
+  }
+}
+
+// 2. SAYFA YÜKLENDİĞİNDE ÇALIŞACAK GRAFİKLER (Genel Raporlar)
+document.addEventListener("DOMContentLoaded", function() {
+  
+  // --- A) Ana Durum Grafiği (Doughnut) ---
+  var statusCanvas = document.getElementById('statusChart');
+  if (statusCanvas) {
+    new Chart(statusCanvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: JSON.parse(statusCanvas.dataset.labels),
+        datasets: [{
+          label: 'İş Sayısı',
+          data: JSON.parse(statusCanvas.dataset.values),
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, 
+        plugins: { 
+          title: { display: false }, 
+          legend: { position: 'bottom' } 
+        }
+      }
+    });
+  }
+
+  // --- B) Kategori Grafiği (Pie) ---
+  var categoryCanvas = document.getElementById('categoryChart');
+  if (categoryCanvas) {
+    new Chart(categoryCanvas.getContext('2d'), {
+      type: 'pie',
+      data: {
+        labels: JSON.parse(categoryCanvas.dataset.labels),
+        datasets: [{
+          data: JSON.parse(categoryCanvas.dataset.values),
+          backgroundColor: ['#FF9F40', '#FF6384', '#4BC0C0', '#FFCE56', '#36A2EB']
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        plugins: { 
+          title: { display: false }, 
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+
+  // --- C) Kullanıcı Grafiği (Bar) ---
+  var userCanvas = document.getElementById('userChart');
+  if (userCanvas) {
+    new Chart(userCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: JSON.parse(userCanvas.dataset.labels),
+        datasets: [{
+          label: 'Üzerindeki İş Sayısı',
+          data: JSON.parse(userCanvas.dataset.values),
+          backgroundColor: '#36A2EB',
+          maxBarThickness: 50
+        }]
+      },
+      options: { 
+        responsive: true, 
+        maintainAspectRatio: false, 
+        plugins: { 
+          title: { display: false },
+          legend: { display: false } 
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+  }
 });

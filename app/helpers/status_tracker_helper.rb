@@ -1,24 +1,33 @@
 module StatusTrackerHelper
     def calculate_time_in_statuses(issue)
-        history = {}
+        history = []
         last_time = issue.created_on
-        issue.journals.includes(:details).each do |journal|
+        creator = issue.author ? issue.author.name : "Bilinmiyor"
+        issue.journals.includes(:details, :user).order(:created_on).each do |journal|
             journal.details.each do |detail|
                 if detail.prop_key == 'status_id'
                     duration = journal.created_on - last_time
                     old_status_id = detail.old_value.to_i
                     old_status = IssueStatus.find_by(id: old_status_id)
                     status_name = old_status ? old_status.name : "Silinmiş Durum"
-                    history[status_name] ||= 0
-                    history[status_name] += duration
+                    changer = journal.user ? journal.user.name : "Silinmiş Kullanıcı"
+
+                    history << { 
+                        status: status_name, 
+                        duration: duration, 
+                        author: changer
+                    }
                     last_time = journal.created_on
                 end
             end
         end
         time_since_last = Time.now - last_time
-        current_status_now = issue.status.name
-        history[current_status_now] ||= 0
-        history[current_status_now] += time_since_last
+        current_status_name = issue.status.name
+        history << { 
+            status: current_status_name, 
+            duration: time_since_last, 
+            author: "Şu An Bekliyor"
+        }
         return history
     end    
     def format_duration(seconds)

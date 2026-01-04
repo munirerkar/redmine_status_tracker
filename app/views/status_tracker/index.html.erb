@@ -1,15 +1,33 @@
-<h2>📊 Son İş Kayıtları (Test Paneli)</h2>
+<h2>📊 <%= @project.name %> - Son İş Kayıtları</h2>
+
+<% content_for :header_tags do %>
+    <%= javascript_include_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <%= stylesheet_link_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
+<% end %>
 
 <table class="list issues">
   <thead>
     <tr>
-      <th># ID</th>
+      <th>
+        <%= link_to '# ID', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
       <th>Konu</th>
-      <th>Kategori</th> 
-      <th>Atanan Kişi</th>
-      <th>Şu Anki Durum</th>
-      <th>⏱️ Süre Analizi (Hangi Durumda Ne Kadar?)</th> <th>Oluşturulma Tarihi</th>
-      
+      <th>
+        <%= link_to 'Kategori', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'category_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
+      <th>
+        <%= link_to 'Atanan Kişi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'assigned_to_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
+      <th>
+        <%= link_to 'Şu Anki Durum', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'status_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
+      <th>
+        <%= link_to '⏱️ Süre Analizi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'updated_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
+      <th>
+        <%= link_to 'Oluşturulma Tarihi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'created_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -21,9 +39,66 @@
       <td><%= issue.assigned_to ? issue.assigned_to.name : '-' %></td>
       <td><%= issue.status.name %></td>
       <td>
-        <% times = calculate_time_in_statuses(issue) %>
-        <% times.each do |status_name, seconds| %>
-          <strong><%= status_name %>:</strong> <%= format_duration(seconds) %><br>
+        <% 
+           history_list = calculate_time_in_statuses(issue) 
+           current_state = history_list.last
+           previous_states = history_list[0...-1] 
+        %>
+
+        <div style="font-weight:bold; color:#28a745;">
+           <%= current_state[:status] %>: <%= format_duration(current_state[:duration]) %>
+        </div>
+        <div style="font-size:0.85em; color:#666;">
+           (Devam Ediyor...)
+        </div>
+
+        <% if previous_states.any? %>
+          <div style="margin-top:5px;">
+            <a href="javascript:void(0)" onclick="openHistoryModal('modal-<%= issue.id %>')" style="font-size:0.9em; text-decoration:underline; color:#1a73e8;">
+              🔍 Detaylar
+            </a>
+          </div>
+
+          <div id="modal-<%= issue.id %>" class="custom-modal">
+            <div class="custom-modal-content">
+              <span class="custom-close" onclick="closeHistoryModal('modal-<%= issue.id %>')">&times;</span>
+              
+              <h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">
+              </h3>
+              
+              <table class="list" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Durum</th>
+                    <th>Geçen Süre</th>
+                    <th>Değiştiren Kişi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% previous_states.each do |item| %>
+                    <tr>
+                      <td style="font-weight:bold;"><%= item[:status] %></td>
+                      <td><%= format_duration(item[:duration]) %></td>
+                      <td>
+                        <span style="font-style:italic; color:#666;">
+                          <%= item[:author] %>
+                        </span>
+                      </td>
+                    </tr>
+                  <% end %>
+                  <tr style="background-color:#e8f5e9;">
+                      <td style="font-weight:bold;"><%= current_state[:status] %> (Güncel)</td>
+                      <td><%= format_duration(current_state[:duration]) %></td>
+                      <td>-</td>
+                    </tr>
+                </tbody>
+              </table>
+              <br>
+              <div style="text-align:right;">
+                <button onclick="closeHistoryModal('modal-<%= issue.id %>')">Kapat</button>
+              </div>
+            </div>
+          </div>
         <% end %>
       </td>
       <td><%= format_time(issue.created_on) %></td>
@@ -38,38 +113,72 @@
 
 <hr />
 
+<h3>📑 Kategori ve Kullanıcı Özeti</h3>
+<table class="list">
+  <thead>
+    <tr>
+      <th>
+        <%= link_to 'Kategori', { 
+            :controller => 'status_tracker', 
+            :action => 'index', 
+            :project_id => @project,
+            # Ana tablonun sıralamasını korumak için mevcut parametreleri ekliyoruz
+            :sort => params[:sort], 
+            :direction => params[:direction],
+            # Özet tablosu için YENİ parametreler
+            :summary_sort => 'category', 
+            :summary_dir => (params[:summary_dir] == 'asc' ? 'desc' : 'asc') 
+        } %>
+      </th>
+
+      <th>
+        <%= link_to 'Kullanıcı', { 
+            :controller => 'status_tracker', 
+            :action => 'index', 
+            :project_id => @project,
+            :sort => params[:sort], 
+            :direction => params[:direction],
+            :summary_sort => 'user', 
+            :summary_dir => (params[:summary_dir] == 'asc' ? 'desc' : 'asc') 
+        } %>
+      </th>
+
+      <th>
+        <%= link_to 'Toplam İş Sayısı', { 
+            :controller => 'status_tracker', 
+            :action => 'index', 
+            :project_id => @project,
+            :sort => params[:sort], 
+            :direction => params[:direction],
+            :summary_sort => 'count', 
+            :summary_dir => (params[:summary_dir] == 'asc' ? 'desc' : 'asc') 
+        } %>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @summary_table.each do |row| %>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td><%= row[:category_name] %></td>
+      <td><%= row[:user_name] %></td>
+      <td style="font-weight:bold; text-align:center;"><%= row[:count] %></td>
+    </tr>
+    <% end %>
+    
+    <tr style="background-color: #f5f5f5; font-weight: bold;">
+      <td colspan="2" style="text-align: right;">GENEL TOPLAM:</td>
+      <td style="text-align: center;"><%= @issues.count %></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
 <div style="width: 500px; margin: 20px auto; text-align: center;">
   <h3>📈 İş Durum Dağılımı</h3>
-  <canvas id="myStatusChart"></canvas>
+  <canvas id="statusChart" 
+          data-labels="<%= @chart_labels.to_json %>" 
+          data-values="<%= @chart_data.to_json %>">
+  </canvas>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-  // Controller'dan gelen verileri Javascript'e aktarıyoruz
-  // 'raw' komutu Ruby verisini olduğu gibi (tırnaklarıyla vb.) yazar.
-  const etiketler = <%= raw @chart_labels.to_json %>;
-  const veriler = <%= raw @chart_data.to_json %>;
-
-  const ctx = document.getElementById('myStatusChart');
-
-  new Chart(ctx, {
-    type: 'doughnut', // 'pie' veya 'bar' da yapabilirsin
-    data: {
-      labels: etiketler,
-      datasets: [{
-        label: 'İş Sayısı',
-        data: veriler,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom',
-        }
-      }
-    }
-  });
-</script>

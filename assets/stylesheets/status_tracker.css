@@ -32,3 +32,22 @@
 .custom-close:hover {
   color: black;
 }
+
+
+/* TABLO KAYDIRMA VE SABİT BAŞLIK */
+
+.table-scroll-wrapper {
+  max-height: 500px;
+  overflow-y: auto;  
+  display: block;   
+  border: 1px solid #e0e0e0; 
+  margin-bottom: 10px;
+}
+
+.table-scroll-wrapper th {
+  position: sticky; 
+  top: 0;           
+  z-index: 10;      
+  background-color: #eeeeee; 
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}

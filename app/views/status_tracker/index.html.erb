@@ -6,9 +6,10 @@
     <%= stylesheet_link_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
 <% end %>
 
-<table class="list issues">
-  <thead>
-    <tr>
+<div class="table-scroll-wrapper">
+  <table class="list issues">
+    <thead>
+      <tr>
       <th>
         <%= link_to '# ID', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
@@ -100,12 +101,16 @@
             </div>
           </div>
         <% end %>
-      </td>
-      <td><%= format_time(issue.created_on) %></td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+        </td>
+        <td><%= format_time(issue.created_on) %></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<div class="pagination">
+  <%= pagination_links_full @issue_pages, @issue_count %>
+</div>
 
 <% if @issues.empty? %>
   <p class="nodata">Henüz hiç iş kaydı yok.</p>
@@ -167,7 +172,7 @@
     
     <tr style="background-color: #f5f5f5; font-weight: bold;">
       <td colspan="2" style="text-align: right;">GENEL TOPLAM:</td>
-      <td style="text-align: center;"><%= @issues.count %></td>
+      <td style="text-align: center;"><%= @issue_count %></td>
     </tr>
   </tbody>
 </table>

@@ -1,3 +1,55 @@
-= redmine_status_tracker
+# 📊 Redmine Status Tracker Plugin & Docker Environment
 
-Description goes here
+Bu proje, Redmine üzerindeki işlerin (issues) hangi statüde ne kadar süre beklediğini takip eden, görselleştiren ve analiz eden bir eklentidir.
+
+Ayrıca proje, **Docker** üzerinde kurulu hazır bir Redmine ortamı ile birlikte gelir. Kurulum ve yapılandırma gerektirmez.
+
+![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=for-the-badge&logo=ruby&logoColor=white)
+![Redmine](https://img.shields.io/badge/Redmine-B32024?style=for-the-badge&logo=redmine&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+
+---
+
+## 🚀 Özellikler
+
+* **Detaylı Süre Analizi:** Bir işin "New", "Feedback", "In Progress" gibi statülerde kaç gün/saat beklediğini hesaplar.
+* **Görsel Dashboard:** Proje bazlı iş dağılımlarını ve kullanıcı yüklerini Pasta ve Çubuk grafiklerle (Chart.js) gösterir.
+* **Akıllı Navigasyon:** İş detayları arasında "Önceki / Sonraki" butonları ile gezinebilme (Popup içi).
+* **Modül Yapısı:** Eklenti proje bazlı açılıp kapatılabilir.
+* **IDE Gerektirmez:** Tek tıkla çalışan Docker altyapısı.
+
+---
+
+## 📥 İndir ve Çalıştır (IDE Gerektirmez)
+
+Bu projeyi çalıştırmak için bilgisayarınızda sadece **Docker Desktop** uygulamasının kurulu ve açık olması yeterlidir. Kod editörü (VS Code vb.) gerekmez.
+
+### Adım 1: Projeyi İndirin
+Projeyi ZIP formatında indirmek için aşağıdaki butona tıklayın:
+
+[![](https://img.shields.io/badge/PROJEYİ_İNDİR_(ZIP)-2ea44f?style=for-the-badge&logo=github)](https://github.com/munirerkar/redmine_status_tracker/archive/refs/heads/main.zip)
+
+*(Alternatif olarak `git clone` ile de çekebilirsiniz)*
+
+### Adım 2: Başlatın
+İndirdiğiniz klasörün içindeki **`BASLAT.bat`** dosyasına çift tıklayın.
+*(İlk açılışta gerekli Redmine ve Veritabanı imajlarını indirmesi birkaç dakika sürebilir, lütfen bekleyin.)*
+
+### Adım 3: Kullanın
+Siyah ekran "Başarıyla Çalıştı" dediğinde tarayıcınızı açın:
+👉 **http://localhost:3000**
+
+Kullanıcı: `admin`
+Şifre: `admin`
+
+Eğer kodlarda değişiklik yapmak isterseniz:
+1.  Klasörü **VS Code** ile açın.
+2.  `plugins/redmine_status_tracker` dizininde geliştirmelerinizi yapın.
+3.  Değişiklikleri görmek için `docker compose restart` komutunu kullanın.
+
+---
+
+## 🛑 Nasıl Durdurulur?
+Uygulamayı kapatmak için klasördeki **`DURDUR.bat`** dosyasına çift tıklamanız yeterlidir.
+
+---

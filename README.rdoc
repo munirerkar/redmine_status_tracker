@@ -4,10 +4,6 @@ Bu proje, Redmine üzerindeki işlerin (issues) hangi statüde ne kadar süre be
 
 Ayrıca proje, **Docker** üzerinde kurulu hazır bir Redmine ortamı ile birlikte gelir. Kurulum ve yapılandırma gerektirmez.
 
-![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=for-the-badge&logo=ruby&logoColor=white)
-![Redmine](https://img.shields.io/badge/Redmine-B32024?style=for-the-badge&logo=redmine&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
 ---
 
 ## 🚀 Özellikler
@@ -25,9 +21,8 @@ Ayrıca proje, **Docker** üzerinde kurulu hazır bir Redmine ortamı ile birlik
 Bu projeyi çalıştırmak için bilgisayarınızda sadece **Docker Desktop** uygulamasının kurulu ve açık olması yeterlidir. Kod editörü (VS Code vb.) gerekmez.
 
 ### Adım 1: Projeyi İndirin
-Projeyi ZIP formatında indirmek için aşağıdaki butona tıklayın:
 
-[![](https://img.shields.io/badge/PROJEYİ_İNDİR_(ZIP)-2ea44f?style=for-the-badge&logo=github)](https://github.com/munirerkar/redmine_status_tracker/archive/refs/heads/main.zip)
+https://github.com/munirerkar/redmine_status_tracker/archive/refs/heads/main.zip
 
 *(Alternatif olarak `git clone` ile de çekebilirsiniz)*
 

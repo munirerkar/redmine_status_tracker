@@ -10,8 +10,8 @@ services:
       REDMINE_DB_PASSWORD: gizlisifrem
       REDMINE_SECRET_KEY_BASE: supergizlianahatar
     volumes:
+      - redmine-data:/usr/src/redmine/files
       - ./plugins:/usr/src/redmine/plugins
-      - ./themes:/usr/src/redmine/public/themes
     depends_on:
       - db
 

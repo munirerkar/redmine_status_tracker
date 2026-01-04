@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  redmine:
+    image: redmine:5.1
+    ports:
+      - "3000:3000"
+    environment:
+      REDMINE_DB_MYSQL: db
+      REDMINE_DB_PASSWORD: gizlisifrem
+      REDMINE_SECRET_KEY_BASE: supergizlianahatar
+    volumes:
+      - ./plugins:/usr/src/redmine/plugins
+      - ./themes:/usr/src/redmine/public/themes
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MYSQL_ROOT_PASSWORD: gizlisifrem
+      MYSQL_DATABASE: redmine
+      MYSQL_USER: redmine
+      MYSQL_PASSWORD: gizlisifrem
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:

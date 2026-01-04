@@ -32,7 +32,12 @@
     </tr>
   </thead>
   <tbody>
-    <% @issues.each do |issue| %>
+    <% @issues.each_with_index do |issue, index| %>
+    <% 
+       # ÖNCEKİ ve SONRAKİ İşi Bulma Mantığı
+       prev_issue = index > 0 ? @issues[index - 1] : nil
+       next_issue = index < @issues.length - 1 ? @issues[index + 1] : nil
+    %>
     <tr class="<%= cycle('odd', 'even') %>">
       <td><%= link_to issue.id, issue_path(issue) %></td>
       <td><%= link_to issue.subject, issue_path(issue) %></td>
@@ -49,9 +54,7 @@
         <div style="font-weight:bold; color:#28a745;">
            <%= current_state[:status] %>: <%= format_duration(current_state[:duration]) %>
         </div>
-        <div style="font-size:0.85em; color:#666;">
-           (Devam Ediyor...)
-        </div>
+        <div style="font-size:0.85em; color:#666;">(Devam Ediyor...)</div>
 
         <% if previous_states.any? %>
           <div style="margin-top:5px;">
@@ -62,12 +65,15 @@
 
           <div id="modal-<%= issue.id %>" class="custom-modal">
             <div class="custom-modal-content">
-              <span class="custom-close" onclick="closeHistoryModal('modal-<%= issue.id %>')">&times;</span>
               
-              <h3 style="border-bottom:1px solid #eee; padding-bottom:10px;">
-              </h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #333;">
+                  <span style="color: #666;">#<%= issue.id %></span> <%= issue.subject %>
+                </h3>
+                <span class="custom-close" onclick="closeHistoryModal('modal-<%= issue.id %>')">&times;</span>
+              </div>
               
-              <table class="list" style="width:100%">
+              <table class="list" style="width:100%; margin-bottom: 20px;">
                 <thead>
                   <tr>
                     <th>Durum</th>
@@ -80,28 +86,51 @@
                     <tr>
                       <td style="font-weight:bold;"><%= item[:status] %></td>
                       <td><%= format_duration(item[:duration]) %></td>
-                      <td>
-                        <span style="font-style:italic; color:#666;">
-                          <%= item[:author] %>
-                        </span>
-                      </td>
+                      <td><span style="font-style:italic; color:#666;"><%= item[:author] %></span></td>
                     </tr>
                   <% end %>
-                  <tr style="background-color:#e8f5e9;">
+                   <tr style="background-color:#e8f5e9;">
                       <td style="font-weight:bold;"><%= current_state[:status] %> (Güncel)</td>
                       <td><%= format_duration(current_state[:duration]) %></td>
                       <td>-</td>
                     </tr>
                 </tbody>
               </table>
-              <br>
-              <div style="text-align:right;">
-                <button onclick="closeHistoryModal('modal-<%= issue.id %>')">Kapat</button>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 15px;">
+                
+                <div>
+                  <% if prev_issue %>
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= prev_issue.id %>')" style="cursor: pointer;">
+                      &laquo; Önceki Konu
+                    </button>
+                    <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                       #<%= prev_issue.id %> - <%= prev_issue.subject %>
+                    </div>
+                  <% else %>
+                    <button disabled style="opacity: 0.5; cursor: not-allowed;">&laquo; Önceki Yok</button>
+                  <% end %>
+                </div>
+
+                <div style="text-align: right;">
+                  <% if next_issue %>
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= next_issue.id %>')" style="cursor: pointer;">
+                      Sonraki Konu &raquo;
+                    </button>
+                    <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                       #<%= next_issue.id %> - <%= next_issue.subject %>
+                    </div>
+                  <% else %>
+                    <button disabled style="opacity: 0.5; cursor: not-allowed;">Sonraki Yok &raquo;</button>
+                  <% end %>
+                </div>
+
               </div>
+
             </div>
           </div>
         <% end %>
-        </td>
+      </td>
         <td><%= format_time(issue.created_on) %></td>
       </tr>
       <% end %>

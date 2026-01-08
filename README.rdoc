@@ -51,8 +51,8 @@ Uygulamayı kapatmak için klasördeki **`DURDUR.bat`** dosyasına çift tıklam
 
 ## Ekran Görüntüleri
 
-![Image](https://github.com/user-attachments/assets/ecfb09cf-cae6-434e-a97c-7066b42df569)
+![Image](https://github.com/user-attachments/assets/0ee756e4-18bf-420a-ab69-051dd67a3408)
 
-![Image](https://github.com/user-attachments/assets/28bc09cb-b868-4350-bb08-51f77e92a87c)
+![Image](https://github.com/user-attachments/assets/cb29d719-bf60-41cf-bd2b-1f2d1b8f6644)
 
-![Image](https://github.com/user-attachments/assets/01e556da-ee3a-478d-999f-f04e2fd61ddc)
+![Image](https://github.com/user-attachments/assets/737a2747-b45a-4f02-8a05-836de7dcef17)

@@ -14,9 +14,14 @@ class StatusTrackerController < ApplicationController
     
     base_scope = @project.issues.order("#{sort_column} #{sort_direction}")
 
-    counts = base_scope.group(:status).count
-    @chart_labels = counts.map { |status, count| status.name }
-    @chart_data = counts.map { |status, count| count }
+    filtered_scope = IssueFilterService.new(base_scope, params).filter
+
+    filtered_scope = filtered_scope.order("#{sort_column} #{sort_direction}")
+
+    @issues = filtered_scope
+    counts = filtered_scope.group(:status).count
+    @status_names = counts.keys.map(&:name)
+    @status_values = counts.values
 
     raw_counts = base_scope.group(:category_id, :assigned_to_id).count
     @summary_table = raw_counts.map do |(cat_id, user_id), count|
@@ -28,6 +33,7 @@ class StatusTrackerController < ApplicationController
         count: count
       }
     end
+
     # Özet Tablosu Sıralaması
     summary_sort = params[:summary_sort] || 'count'
     summary_dir = params[:summary_dir] || 'desc'
@@ -40,15 +46,12 @@ class StatusTrackerController < ApplicationController
       end
     end
     @summary_table.reverse! if summary_dir == 'desc'
-
-    #TABLO İÇİN SAYFALAMA (PAGINATION)
-    @issue_count = base_scope.count
-    @limit = per_page_option
     
+    #TABLO İÇİN SAYFALAMA (PAGINATION)
+    @limit = 10
+    @issue_count = filtered_scope.count
     @issue_pages = Paginator.new @issue_count, @limit, params['page']
-
-    @offset ||= @issue_pages.offset
-    @issues = base_scope.limit(@limit).offset(@offset).to_a
+    @issues = filtered_scope.offset(@issue_pages.offset).limit(@limit)
   end
   private
   def find_project

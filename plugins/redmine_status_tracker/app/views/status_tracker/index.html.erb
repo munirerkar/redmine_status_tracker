@@ -1,10 +1,47 @@
-<h2>📊 <%= @project.name %> - Son İş Kayıtları</h2>
-
 <% content_for :header_tags do %>
     <%= javascript_include_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <%= stylesheet_link_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
 <% end %>
+
+<h2>📊 <%= @project.name %> - Son İş Kayıtları</h2>
+
+<fieldset style="border: 1px solid #e0e0e0; padding: 10px; margin-bottom: 15px; background: #f9f9f9; border-radius: 5px;">
+  <legend style="font-weight: bold; color: #555;">🔍 Filtrele</legend>
+  
+  <form action="" method="get" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+    <%= hidden_field_tag 'project_id', @project.identifier %>
+    
+    <div>
+      <label for="status_id">Durum:</label>
+      <%= select_tag 'status_id', 
+          options_from_collection_for_select(IssueStatus.all, 'id', 'name', params[:status_id]), 
+          prompt: "Tümü", 
+          style: "border: 1px solid #ccc; border-radius: 3px;" %>
+    </div>
+
+    <div>
+      <label for="assigned_to_id">Atanan Kişi:</label>
+      <%= select_tag 'assigned_to_id', 
+          options_from_collection_for_select(@project.members.map(&:user), 'id', 'name', params[:assigned_to_id]), 
+          prompt: "Tümü", 
+          style: "border: 1px solid #ccc; border-radius: 3px;" %>
+    </div>
+
+    <div>
+      <label for="category_id">Kategori:</label>
+      <%= select_tag 'category_id', 
+          options_from_collection_for_select(@project.issue_categories, 'id', 'name', params[:category_id]), 
+          prompt: "Tümü", 
+          style: "border: 1px solid #ccc; border-radius: 3px;" %>
+    </div>
+
+    <div>
+      <button type="submit" class="icon icon-checked">Uygula</button>
+      <a href="?" class="icon icon-reload">Filtreyi Temizle</a>
+    </div>
+  </form>
+</fieldset>
 
 <div class="table-scroll-wrapper">
   <table class="list issues">

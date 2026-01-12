@@ -48,3 +48,11 @@ Eğer kodlarda değişiklik yapmak isterseniz:
 Uygulamayı kapatmak için klasördeki **`DURDUR.bat`** dosyasına çift tıklamanız yeterlidir.
 
 ---
+
+## Ekran Görüntüleri
+
+![Image](https://github.com/user-attachments/assets/0ee756e4-18bf-420a-ab69-051dd67a3408)
+
+![Image](https://github.com/user-attachments/assets/cb29d719-bf60-41cf-bd2b-1f2d1b8f6644)
+
+![Image](https://github.com/user-attachments/assets/737a2747-b45a-4f02-8a05-836de7dcef17)

@@ -4,41 +4,41 @@
     <%= stylesheet_link_tag 'status_tracker', :plugin => 'redmine_status_tracker' %>
 <% end %>
 
-<h2>📊 <%= @project.name %> - Son İş Kayıtları</h2>
+<h2>📊 <%= @project.name%> <%=l(:label_latest_issues)%></h2>
 
 <fieldset style="border: 1px solid #e0e0e0; padding: 10px; margin-bottom: 15px; background: #f9f9f9; border-radius: 5px;">
-  <legend style="font-weight: bold; color: #555;">🔍 Filtrele</legend>
+  <legend style="font-weight: bold; color: #555;"><%=l(:label_filter_title)%></legend>
   
   <form action="" method="get" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
     <%= hidden_field_tag 'project_id', @project.identifier %>
     
     <div>
-      <label for="status_id">Durum:</label>
+      <label for="status_id"><%=l(:label_status)%>:</label>
       <%= select_tag 'status_id', 
           options_from_collection_for_select(IssueStatus.all, 'id', 'name', params[:status_id]), 
-          prompt: "Tümü", 
+          prompt: l(:label_all), 
           style: "border: 1px solid #ccc; border-radius: 3px;" %>
     </div>
 
     <div>
-      <label for="assigned_to_id">Atanan Kişi:</label>
+      <label for="assigned_to_id"><%=l(:label_assigned_to)%>:</label>
       <%= select_tag 'assigned_to_id', 
           options_from_collection_for_select(@project.members.map(&:user), 'id', 'name', params[:assigned_to_id]), 
-          prompt: "Tümü", 
+          prompt: l(:label_all), 
           style: "border: 1px solid #ccc; border-radius: 3px;" %>
     </div>
 
     <div>
-      <label for="category_id">Kategori:</label>
+      <label for="category_id"><%=l(:label_category)%>:</label>
       <%= select_tag 'category_id', 
           options_from_collection_for_select(@project.issue_categories, 'id', 'name', params[:category_id]), 
-          prompt: "Tümü", 
+          prompt: l(:label_all), 
           style: "border: 1px solid #ccc; border-radius: 3px;" %>
     </div>
 
     <div>
-      <button type="submit" class="icon icon-checked">Uygula</button>
-      <a href="?" class="icon icon-reload">Filtreyi Temizle</a>
+      <button type="submit" class="icon icon-checked"><%=l(:label_apply)%></button>
+      <a href="?" class="icon icon-reload"><%=l(:label_clear)%></a>
     </div>
   </form>
 </fieldset>
@@ -48,23 +48,23 @@
     <thead>
       <tr>
       <th>
-        <%= link_to '# ID', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+        <%= link_to l(:label_issue_id), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
-      <th>Konu</th>
+      <th><%=l(:label_subject)%></th>
       <th>
-        <%= link_to 'Kategori', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'category_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
-      </th>
-      <th>
-        <%= link_to 'Atanan Kişi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'assigned_to_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+        <%= link_to l(:label_category), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'category_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
       <th>
-        <%= link_to 'Şu Anki Durum', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'status_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+        <%= link_to l(:label_assigned_to), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'assigned_to_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
       <th>
-        <%= link_to '⏱️ Süre Analizi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'updated_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+        <%= link_to l(:label_status), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'status_id', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
       <th>
-        <%= link_to 'Oluşturulma Tarihi', { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'created_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+        <%= link_to l(:label_status_tracker), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'updated_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
+      </th>
+      <th>
+        <%= link_to l(:label_created_date), { :controller => 'status_tracker', :action => 'index', :project_id => @project, :sort => 'created_on', :direction => (params[:direction] == 'asc' ? 'desc' : 'asc') } %>
       </th>
     </tr>
   </thead>
@@ -91,7 +91,7 @@
         <div style="font-weight:bold; color:#28a745;">
            <%= current_state[:status] %>: <%= format_duration(current_state[:duration]) %>
         </div>
-        <div style="font-size:0.85em; color:#666;">(Devam Ediyor...)</div>
+        <div style="font-size:0.85em; color:#666;"><%=l(:label_continuing)%></div>
 
         <% if previous_states.any? %>
           <% 
@@ -100,9 +100,9 @@
           %>
           <div style="margin-top:5px;">
             <a href="javascript:void(0)" 
-               onclick="openHistoryModal('modal-<%= issue.id %>', 'chart-<%= issue.id %>', <%= chart_labels.to_json %>, <%= chart_data.to_json %>)" 
+               onclick="openHistoryModal('modal-<%= issue.id %>', 'chart-<%= issue.id %>', <%= chart_labels.to_json %>, <%= chart_data.to_json %>, '<%= l(:label_elapsed_time) %>', '<%= l(:label_hour) %>')"
                style="font-size:0.9em; text-decoration:underline; color:#1a73e8;">
-              🔍 Detaylar ve Grafik
+              <%=l(:label_details)%>
             </a>
           </div>
 
@@ -123,9 +123,9 @@
               <table class="list" style="width:100%; margin-bottom: 20px;">
                 <thead>
                   <tr>
-                    <th>Durum</th>
-                    <th>Geçen Süre</th>
-                    <th>Değiştiren Kişi</th>
+                    <th><%=l(:label_status)%></th>
+                    <th><%=l(:label_elapsed_time)%></th>
+                    <th><%=l(:label_assigned_to)%></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -153,14 +153,14 @@
                        p_labels = p_hist.map { |h| h[:status] }
                        p_data = p_hist.map { |h| (h[:duration] / 3600.0).round(2) }
                     %>
-                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= prev_issue.id %>', 'chart-<%= prev_issue.id %>', <%= p_labels.to_json %>, <%= p_data.to_json %>)" style="cursor: pointer;">
-                      &laquo; Önceki Konu
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= prev_issue.id %>', 'chart-<%= prev_issue.id %>', <%= p_labels.to_json %>, <%= p_data.to_json %>, '<%= l(:label_elapsed_time) %>', '<%= l(:label_hour) %>')" style="cursor: pointer;">
+                      &laquo; <%=l(:label_prev_issue)%>
                     </button>
                     <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                        #<%= prev_issue.id %> - <%= prev_issue.subject %>
                     </div>
                   <% else %>
-                    <button disabled style="opacity: 0.5; cursor: not-allowed;">&laquo; Önceki Yok</button>
+                    <button disabled style="opacity: 0.5; cursor: not-allowed;">&laquo; <%=l(:label_prev_issue)%></button>
                   <% end %>
                 </div>
 
@@ -171,14 +171,14 @@
                        n_labels = n_hist.map { |h| h[:status] }
                        n_data = n_hist.map { |h| (h[:duration] / 3600.0).round(2) }
                     %>
-                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= next_issue.id %>', 'chart-<%= next_issue.id %>', <%= n_labels.to_json %>, <%= n_data.to_json %>)" style="cursor: pointer;">
-                      Sonraki Konu &raquo;
+                    <button onclick="closeHistoryModal('modal-<%= issue.id %>'); openHistoryModal('modal-<%= next_issue.id %>', 'chart-<%= next_issue.id %>', <%= n_labels.to_json %>, <%= n_data.to_json %>, '<%= l(:label_elapsed_time) %>', '<%= l(:label_hour) %>')" style="cursor: pointer;">
+                      <%=l(:label_next_issue)%> &raquo;
                     </button>
                     <div style="font-size: 10px; color: #888; margin-top: 2px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                        #<%= next_issue.id %> - <%= next_issue.subject %>
                     </div>
                   <% else %>
-                    <button disabled style="opacity: 0.5; cursor: not-allowed;">Sonraki Yok &raquo;</button>
+                    <button disabled style="opacity: 0.5; cursor: not-allowed;"><%=l(:label_next_issue)%> &raquo;</button>
                   <% end %>
                 </div>
 
@@ -199,31 +199,30 @@
 </div>
 
 <% if @issues.empty? %>
-  <p class="nodata">Henüz hiç iş kaydı yok.</p>
+  <p class="nodata"><%=l(:msg_no_data)%></p>
 <% end %>
 
 <hr />
 
-<h3>📑 Kategori ve Kullanıcı Özeti</h3>
+<h3>📑 <%= l(:label_category_user_summary) %></h3>
+
 <table class="list">
   <thead>
     <tr>
       <th>
-        <%= link_to 'Kategori', { 
+        <%= link_to l(:label_category), { 
             :controller => 'status_tracker', 
             :action => 'index', 
             :project_id => @project,
-            # Ana tablonun sıralamasını korumak için mevcut parametreleri ekliyoruz
             :sort => params[:sort], 
             :direction => params[:direction],
-            # Özet tablosu için YENİ parametreler
             :summary_sort => 'category', 
             :summary_dir => (params[:summary_dir] == 'asc' ? 'desc' : 'asc') 
         } %>
       </th>
 
       <th>
-        <%= link_to 'Kullanıcı', { 
+        <%= link_to l(:label_user), { 
             :controller => 'status_tracker', 
             :action => 'index', 
             :project_id => @project,
@@ -235,7 +234,7 @@
       </th>
 
       <th>
-        <%= link_to 'Toplam İş Sayısı', { 
+        <%= link_to l(:label_total_issue_count), { 
             :controller => 'status_tracker', 
             :action => 'index', 
             :project_id => @project,
@@ -257,7 +256,7 @@
     <% end %>
     
     <tr style="background-color: #f5f5f5; font-weight: bold;">
-      <td colspan="2" style="text-align: right;">GENEL TOPLAM:</td>
+      <td colspan="2" style="text-align: right;"><%= l(:label_grand_total) %>:</td>
       <td style="text-align: center;"><%= @issue_count %></td>
     </tr>
   </tbody>
@@ -265,18 +264,17 @@
 
 <hr />
 
-
-<h3>📊 Proje Analiz Paneli</h3>
+<h3>📊 <%= l(:label_project_analysis_panel) %></h3>
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; margin-bottom: 50px;">
 
   <div style="flex: 1; min-width: 300px; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
-    <h4 style="text-align:center; margin-bottom:15px;">İş Durum Dağılımı</h4>
+    <h4 style="text-align:center; margin-bottom:15px;"><%= l(:label_chart_status) %></h4>
     
     <div style="position: relative; height: 500px; width: 100%;">
       <canvas id="statusChart"
-              data-labels='<%= @chart_labels.to_json %>'
-              data-values='<%= @chart_data.to_json %>'>
+              data-labels='<%= @status_names.to_json %>'
+              data-values='<%= @status_values.to_json %>'>
       </canvas>
     </div>
   </div>
@@ -284,25 +282,24 @@
   <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
     
     <div style="flex: 1; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
-      <h4 style="text-align:center; margin-bottom:10px;">Kategori Dağılımı</h4>
+      <h4 style="text-align:center; margin-bottom:10px;"><%= l(:label_chart_category) %></h4>
       <div style="position: relative; height: 220px; width: 100%;">
         <canvas id="categoryChart"
-          data-labels='<%= @summary_table.map{|i| i[:category_name]}.to_json %>'
-          data-values='<%= @summary_table.map{|i| i[:count]}.to_json %>'>
+          data-labels='<%= @category_chart_data.map{|i| i[:name]}.to_json %>'
+          data-values='<%= @category_chart_data.map{|i| i[:count]}.to_json %>'>
         </canvas>
       </div>
     </div>
 
     <div style="flex: 1; border: 1px solid #eee; padding: 15px; border-radius: 8px; background: #fafafa;">
-      <h4 style="text-align:center; margin-bottom:10px;">Kullanıcı İş Yükü</h4>
+      <h4 style="text-align:center; margin-bottom:10px;"><%= l(:label_chart_user_load) %></h4>
       <div style="position: relative; height: 220px; width: 100%;">
         <canvas id="userChart"
-          data-labels='<%= @summary_table.map{|i| i[:user_name]}.to_json %>'
-          data-values='<%= @summary_table.map{|i| i[:count]}.to_json %>'>
+          data-labels='<%= @user_chart_data.map{|i| i[:name]}.to_json %>'
+          data-values='<%= @user_chart_data.map{|i| i[:count]}.to_json %>'>
         </canvas>
       </div>
     </div>
 
   </div>
-
 </div>

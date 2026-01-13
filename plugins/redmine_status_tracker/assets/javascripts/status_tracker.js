@@ -52,14 +52,14 @@ document.addEventListener("DOMContentLoaded", function() {
 var activeModalChart = null;
 
 // 1. MODAL (POPUP) FONKSİYONLARI
-function openHistoryModal(modalId, canvasId, labels, data) {
+function openHistoryModal(modalId, canvasId, labels, data, chartLabel, hourLabel) {
   var modal = document.getElementById(modalId);
   if (modal) {
     modal.style.display = "block";
     
     // Eğer grafik parametreleri geldiyse grafiği çiz
     if (canvasId && labels && data) {
-      drawModalChart(canvasId, labels, data);
+      drawModalChart(canvasId, labels, data, chartLabel, hourLabel);
     }
   }
 }
@@ -77,7 +77,10 @@ function closeHistoryModal(id) {
 }
 
 // Popup İçi Grafik Çizici
-function drawModalChart(canvasId, labels, data) {
+function drawModalChart(canvasId, labels, data, chartLabel, hourLabel) {
+  var ctxElement = document.getElementById(canvasId);
+  if (!ctxElement) return;
+
   var ctx = document.getElementById(canvasId).getContext('2d');
   
   // Önceki grafik varsa sil (Yoksa mouse üzerine gelince titrer)
@@ -90,7 +93,7 @@ function drawModalChart(canvasId, labels, data) {
     data: {
       labels: labels,
       datasets: [{
-        label: 'Bu Durumda Geçen Süre (Saat)',
+        label: chartLabel,
         data: data,
         backgroundColor: 'rgba(54, 162, 235, 0.6)',
         borderColor: 'rgba(54, 162, 235, 1)',
@@ -101,7 +104,23 @@ function drawModalChart(canvasId, labels, data) {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { beginAtZero: true, title: { display: true, text: 'Saat' } }
+        y: {
+          beginAtZero: true,
+          title: { 
+            display: true, 
+            text: hourLabel
+          }
+        }
+      },
+      plugins: {
+        legend: { display: true },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.parsed.y + ' ' + hourLabel;
+            }
+          }
+        }
       }
     }
   });

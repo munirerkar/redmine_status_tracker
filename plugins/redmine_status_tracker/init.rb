@@ -8,5 +8,5 @@ Redmine::Plugin.register :redmine_status_tracker do
   project_module :status_tracker do
     permission :view_status_tracker, :status_tracker => :index
   end
-  menu :project_menu, :status_tracker, { :controller => 'status_tracker', :action => 'index' }, :caption => 'Durum Analizi', :after => :issues, :param => :project_id
+  menu :project_menu, :status_tracker, { :controller => 'status_tracker', :action => 'index' }, :caption => :label_status_tracker, :after => :issues, :param => :project_id
 end
